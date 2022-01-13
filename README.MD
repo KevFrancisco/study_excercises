@@ -1,8 +1,10 @@
 # Programming Study
 
 Personal repository for various programming excercises.
-Ususally this is to set-up my development environment, or fine tuning my development workflow.
-This is also to mental models, concepts, and syntaxes of programming languages.
+Ususally this is to set-up my development environment,
+  or fine tuning my development workflow.
+This is also to study my mental models, language quirks,
+  common concepts, and syntaxes of programming languages.
 
 This also includes my AOC solutions because why not! :)
 
