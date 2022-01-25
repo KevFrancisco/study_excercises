@@ -1,4 +1,7 @@
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 // Pardon the code, I'm only beginning to dipinto java syntax
 // it might be prone to being... inelegant.
@@ -10,43 +13,49 @@ public class Day3b {
     map.put(key, count + 1);
   }
 
-  static int get_next_array_length(String[] current_dataset, int char_position, String get_me) {
+  static int get_next_array_length(ArrayList<String> current_dataset, int char_position, String get_me) {
     int next_array_length = 0;
-    for (int i = 0; i < current_dataset.length; i++) {
-      if (current_dataset[i].charAt(char_position) == get_me.charAt(0)) {
+    for (int i = 0; i < current_dataset.size(); i++) {
+      if (current_dataset.get(i).charAt(char_position) == get_me.charAt(0)) {
         next_array_length++;
       }
     }
     return next_array_length;
   };
 
-  static void populateNextArrayOfStrings(String[][] dataset, int array_position, int char_position, String get_me) {
-    String[] current_dataset = dataset[array_position];
+  static void populateNextArrayOfStrings(List<ArrayList<String>> dataset, int array_position, int char_position,
+      String get_me) {
+    ArrayList<String> current_dataset = dataset.get(array_position);
     int next_array_length = get_next_array_length(current_dataset, char_position, get_me);
-    String[] new_strings_array = new String[next_array_length];
-    dataset[array_position + 1] = new_strings_array;
+    ArrayList<String> new_strings_array = new ArrayList<String>(next_array_length);
+    dataset.add(new_strings_array);
   };
 
-  static String loopOverCollection(String[][] dataset, String[] current_dataset, int array_position,
+  static String loopOverCollection(List<ArrayList<String>> dataset, ArrayList<String> current_dataset,
+      int array_position,
       int char_position) {
-    if (current_dataset.length == 1) {
-      return current_dataset[0];
+    if (current_dataset.size() == 1) {
+      return current_dataset.get(0);
     }
 
-    if (dataset.length == 2) {
-      for (int i = 0; i < current_dataset.length; i++) {
-        if (dataset[array_position][i].charAt(char_position) == 1) {
+    if (dataset.size() == 2) {
+      for (int i = 0; i < current_dataset.size(); i++) {
+        if (dataset.get(array_position).get(i).charAt(char_position) == 1) {
           array_position++;
           char_position++;
-          return loopOverCollection(dataset, dataset[array_position], array_position, char_position);
+          return loopOverCollection(dataset, dataset.get(array_position), array_position, char_position);
         }
       }
     }
 
-    Map<String, Integer> counts = Map.of("1", 0, "2", 0);
+    HashMap<String, Integer> counts = new HashMap<String, Integer>();
+    counts.put("1", 0);
+    counts.put("0", 0);
 
-    for (int i = 0; i < current_dataset.length; i++) {
-      if (current_dataset[i].charAt(char_position) == "1".charAt(0)) {
+    for (int i = 0; i < current_dataset.size(); i++) {
+      char tmp_char = current_dataset.get(i).charAt(char_position);
+      String tmp_str = Character.toString(tmp_char);
+      if (tmp_str == "1") {
         increment_count(counts, "1");
       } else {
         increment_count(counts, "0");
@@ -61,7 +70,7 @@ public class Day3b {
     array_position++;
     char_position++;
 
-    return loopOverCollection(dataset, dataset[array_position], array_position, char_position);
+    return loopOverCollection(dataset, dataset.get(array_position), array_position, char_position);
 
   };
 
@@ -73,11 +82,21 @@ public class Day3b {
     // an array of array of strings (?!).
     int char_position = 0;
     int array_position = 0;
-    int rawinput_rows = rawinput.length;
-    int rawinput_cols = rawinput[0].length();
-    String[][] arrayOfArrayOfStrings = new String[rawinput_rows][rawinput_cols];
-    arrayOfArrayOfStrings[array_position] = rawinput;
-    String[] current_dataset = rawinput;
+    List<ArrayList<String>> arrayOfArrayOfStrings = new ArrayList<>();
+    ArrayList<String> current_dataset = new ArrayList<>();
+    for (int i = 0; i < rawinput.length; i++) {
+      current_dataset.add(rawinput[i]);
+    }
+    arrayOfArrayOfStrings.add(current_dataset);
+
+    // DEBUG
+    for (int i = 0; i < arrayOfArrayOfStrings.size(); i++) {
+      System.out.println(arrayOfArrayOfStrings.get(i));
+      for (int j = 0; j < arrayOfArrayOfStrings.get(i).size(); j++) {
+        System.out.println(arrayOfArrayOfStrings.get(i).get(j));
+      }
+    }
+    System.out.println("Debug over");
 
     String answer;
     answer = loopOverCollection(arrayOfArrayOfStrings, current_dataset, array_position, char_position);
