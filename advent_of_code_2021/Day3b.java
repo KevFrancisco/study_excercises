@@ -9,7 +9,7 @@ import java.util.List;
 public class Day3b {
 
   static void increment_count(Map<String, Integer> map, String key) {
-    Integer count = map.getOrDefault(key, 0);
+    Integer count = map.get(key);
     map.put(key, count + 1);
   }
 
@@ -27,26 +27,43 @@ public class Day3b {
       String get_me) {
     ArrayList<String> current_dataset = dataset.get(array_position);
     int next_array_length = get_next_array_length(current_dataset, char_position, get_me);
-    ArrayList<String> new_strings_array = new ArrayList<String>(next_array_length);
-    dataset.add(new_strings_array);
+    ArrayList<String> new_current_dataset = new ArrayList<String>(next_array_length);
+    // System.out.println("current_dataset: " + current_dataset + ".");
+    // System.out.println("get_me: " + get_me + ".");
+
+    for (int i = 0; i < current_dataset.size(); i++) {
+      String tmp_str = Character.toString(current_dataset.get(i).charAt(char_position));
+      if (tmp_str.equals(get_me)) {
+        new_current_dataset.add(current_dataset.get(i));
+      }
+    }
+    System.out.println("new_current_dataset: " + new_current_dataset + ".");
+
+    dataset.add(new_current_dataset);
   };
 
   static String loopOverCollection(List<ArrayList<String>> dataset, ArrayList<String> current_dataset,
       int array_position,
       int char_position) {
-    if (current_dataset.size() == 1) {
+
+    if (current_dataset.size() <= 1) {
       return current_dataset.get(0);
     }
 
-    if (dataset.size() == 2) {
-      for (int i = 0; i < current_dataset.size(); i++) {
-        if (dataset.get(array_position).get(i).charAt(char_position) == 1) {
-          array_position++;
-          char_position++;
-          return loopOverCollection(dataset, dataset.get(array_position), array_position, char_position);
-        }
-      }
-    }
+    // if (current_dataset.size() == 2) {
+    // for (int i = 0; i < current_dataset.size(); i++) {
+    // String tmp_str =
+    // Character.toString(current_dataset.get(i).charAt(char_position));
+    // String get_me = "1";
+    // if (tmp_str.equals(get_me)) {
+    // populateNextArrayOfStrings(dataset, array_position, char_position, get_me);
+    // array_position++;
+    // char_position++;
+    // return loopOverCollection(dataset, dataset.get(array_position),
+    // array_position, char_position);
+    // }
+    // }
+    // }
 
     HashMap<String, Integer> counts = new HashMap<String, Integer>();
     counts.put("1", 0);
@@ -55,7 +72,10 @@ public class Day3b {
     for (int i = 0; i < current_dataset.size(); i++) {
       char tmp_char = current_dataset.get(i).charAt(char_position);
       String tmp_str = Character.toString(tmp_char);
-      if (tmp_str == "1") {
+      // Regarding string comparison... == will check if both operands
+      // point to the same object, it WILL be false even if the values are the same
+      // So instead use the .equals method.
+      if (tmp_str.equals("1")) {
         increment_count(counts, "1");
       } else {
         increment_count(counts, "0");
@@ -70,6 +90,13 @@ public class Day3b {
     array_position++;
     char_position++;
 
+    System.out.println("full dataset is : " + dataset);
+    System.out.println("current_dataset is : " + current_dataset);
+    System.out.println("arr_pos is : " + array_position);
+    System.out.println("char_pos is : " + char_position);
+    System.out.println("next current_dataset is : " + dataset.get(array_position));
+
+    // return "Ha!";
     return loopOverCollection(dataset, dataset.get(array_position), array_position, char_position);
 
   };
@@ -89,14 +116,14 @@ public class Day3b {
     }
     arrayOfArrayOfStrings.add(current_dataset);
 
-    // DEBUG
-    for (int i = 0; i < arrayOfArrayOfStrings.size(); i++) {
-      System.out.println(arrayOfArrayOfStrings.get(i));
-      for (int j = 0; j < arrayOfArrayOfStrings.get(i).size(); j++) {
-        System.out.println(arrayOfArrayOfStrings.get(i).get(j));
-      }
-    }
-    System.out.println("Debug over");
+    // // DEBUG
+    // for (int i = 0; i < arrayOfArrayOfStrings.size(); i++) {
+    // System.out.println(arrayOfArrayOfStrings.get(i));
+    // for (int j = 0; j < arrayOfArrayOfStrings.get(i).size(); j++) {
+    // System.out.println(arrayOfArrayOfStrings.get(i).get(j));
+    // }
+    // }
+    // System.out.println("Debug over");
 
     String answer;
     answer = loopOverCollection(arrayOfArrayOfStrings, current_dataset, array_position, char_position);
