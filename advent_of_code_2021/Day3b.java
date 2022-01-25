@@ -1,34 +1,89 @@
+import java.util.Map;
+
 // Pardon the code, I'm only beginning to dipinto java syntax
 // it might be prone to being... inelegant.
 
 public class Day3b {
+
+  static void increment_count(Map<K, Integer> map, K key) {
+    Integer count = map.getOrDefault(key, 0);
+    map.put(key, count + 1);
+  }
+
+  static int get_next_array_length(String[] current_dataset, int char_position, char get_me) {
+    int next_array_length = 0;
+    for (int i = 0; i < current_dataset.length; i++) {
+      if (current_dataset[i].charAt(char_position) == get_me) {
+        next_array_length++;
+      }
+    }
+    return next_array_length;
+  };
+
+  static void populateNextArrayOfStrings(String[][] dataset, int array_position, int char_position, char get_me) {
+    String[] current_dataset = dataset[array_position];
+    int next_array_length = get_next_array_length(current_dataset, char_position, get_me);
+    String[] new_strings_array = new String[next_array_length];
+    dataset[array_position + 1] = new_strings_array;
+  };
+
+  static String loopOverCollection(String[][] dataset, int array_position, int char_position) {
+    String[] current_dataset = dataset[array_position];
+
+    if (dataset.length == 1) {
+      return dataset[0];
+    }
+
+    if (dataset.length == 2) {
+      for (int i = 0; i < current_dataset.length; i++) {
+        if (dataset[array_position][i].charAt(char_position) == 1) {
+          array_position++;
+          char_position++;
+          return loopOverCollection(dataset, array_position, char_position);
+        }
+      }
+    } else {
+      Map<String, Integer> counts = Map.of("1", 0, "2", 0);
+
+      for (int i = 0; i < current_dataset.length; i++) {
+        switch (current_dataset[i].charAt(char_position)) {
+          case "1":
+            increment_count(counts, "1");
+            break;
+          case "0":
+            increment_count(counts, "0");
+            break;
+        }
+        ;
+      }
+      ;
+
+      char get_me = (counts.get("1") > counts.get("0")) ? "1" : "0";
+
+      populateNextArrayOfStrings(dataset, array_position, char_position, get_me);
+      array_position++;
+      char_position++;
+
+      return loopOverCollection(dataset, array_position, char_position);
+    }
+    ;
+
+  };
+
   public static void main(String[] args) {
     String[] rawinput = { "00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000",
         "11001", "00010", "01010" };
 
-    // Get the width of the array
-    int rawinput_rowlen = rawinput[0].length;
+    // The idea is to use a recursive function, to traverse through
+    // an array of array of strings (?!).
+    int char_position = 0;
+    int array_position = 0;
+    String[][] arrayOfArrayOfStrings = new String[rawinput.length][rawinput[0].length];
 
-    // Get the length of the array
-    int rawinput_collen = rawinput.length;
+    String[] answer;
 
-    // Loop over all the elements of the array
-    for (int i = 0; i < rawinput_rowlen; i++) {
-      // Initialize this inside i, everytime we move columns the counter resets
-      int count_i = 0;
-      int count_j = 0;
+    answer = loopOverCollection(arrayOfArrayOfStrings, array_position, char_position);
+    System.out.println(answer);
 
-      for (int j = 0; j < rawinput_collen; j++) {
-        char charAtI = rawinput[j].charAt(i);
-        if (charAtI == "1") {
-          count_i++;
-        } else {
-          count_j++;
-        }
-      }
-      // Done counting for the first column... tally
-
-    }
-
-  }
+  };
 }
