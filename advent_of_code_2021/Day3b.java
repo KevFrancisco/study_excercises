@@ -5,33 +5,32 @@ import java.util.Map;
 
 public class Day3b {
 
-  static void increment_count(Map<K, Integer> map, K key) {
+  static void increment_count(Map<String, Integer> map, String key) {
     Integer count = map.getOrDefault(key, 0);
     map.put(key, count + 1);
   }
 
-  static int get_next_array_length(String[] current_dataset, int char_position, char get_me) {
+  static int get_next_array_length(String[] current_dataset, int char_position, String get_me) {
     int next_array_length = 0;
     for (int i = 0; i < current_dataset.length; i++) {
-      if (current_dataset[i].charAt(char_position) == get_me) {
+      if (current_dataset[i].charAt(char_position) == get_me.charAt(0)) {
         next_array_length++;
       }
     }
     return next_array_length;
   };
 
-  static void populateNextArrayOfStrings(String[][] dataset, int array_position, int char_position, char get_me) {
+  static void populateNextArrayOfStrings(String[][] dataset, int array_position, int char_position, String get_me) {
     String[] current_dataset = dataset[array_position];
     int next_array_length = get_next_array_length(current_dataset, char_position, get_me);
     String[] new_strings_array = new String[next_array_length];
     dataset[array_position + 1] = new_strings_array;
   };
 
-  static String loopOverCollection(String[][] dataset, int array_position, int char_position) {
-    String[] current_dataset = dataset[array_position];
-
-    if (dataset.length == 1) {
-      return dataset[0];
+  static String loopOverCollection(String[][] dataset, String[] current_dataset, int array_position,
+      int char_position) {
+    if (current_dataset.length == 1) {
+      return current_dataset[0];
     }
 
     if (dataset.length == 2) {
@@ -39,34 +38,30 @@ public class Day3b {
         if (dataset[array_position][i].charAt(char_position) == 1) {
           array_position++;
           char_position++;
-          return loopOverCollection(dataset, array_position, char_position);
+          return loopOverCollection(dataset, dataset[array_position], array_position, char_position);
         }
       }
-    } else {
-      Map<String, Integer> counts = Map.of("1", 0, "2", 0);
+    }
 
-      for (int i = 0; i < current_dataset.length; i++) {
-        switch (current_dataset[i].charAt(char_position)) {
-          case "1":
-            increment_count(counts, "1");
-            break;
-          case "0":
-            increment_count(counts, "0");
-            break;
-        }
-        ;
+    Map<String, Integer> counts = Map.of("1", 0, "2", 0);
+
+    for (int i = 0; i < current_dataset.length; i++) {
+      if (current_dataset[i].charAt(char_position) == "1".charAt(0)) {
+        increment_count(counts, "1");
+      } else {
+        increment_count(counts, "0");
       }
       ;
-
-      char get_me = (counts.get("1") > counts.get("0")) ? "1" : "0";
-
-      populateNextArrayOfStrings(dataset, array_position, char_position, get_me);
-      array_position++;
-      char_position++;
-
-      return loopOverCollection(dataset, array_position, char_position);
     }
     ;
+
+    String get_me = (counts.get("1") > counts.get("0")) ? "1" : "0";
+
+    populateNextArrayOfStrings(dataset, array_position, char_position, get_me);
+    array_position++;
+    char_position++;
+
+    return loopOverCollection(dataset, dataset[array_position], array_position, char_position);
 
   };
 
@@ -78,12 +73,15 @@ public class Day3b {
     // an array of array of strings (?!).
     int char_position = 0;
     int array_position = 0;
-    String[][] arrayOfArrayOfStrings = new String[rawinput.length][rawinput[0].length];
+    int rawinput_rows = rawinput.length;
+    int rawinput_cols = rawinput[0].length();
+    String[][] arrayOfArrayOfStrings = new String[rawinput_rows][rawinput_cols];
+    arrayOfArrayOfStrings[array_position] = rawinput;
+    String[] current_dataset = rawinput;
 
-    String[] answer;
+    String answer;
+    answer = loopOverCollection(arrayOfArrayOfStrings, current_dataset, array_position, char_position);
 
-    answer = loopOverCollection(arrayOfArrayOfStrings, array_position, char_position);
     System.out.println(answer);
-
   };
 }
